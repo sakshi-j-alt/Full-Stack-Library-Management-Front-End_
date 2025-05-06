@@ -58,22 +58,54 @@ function displayBooks(bookList) {
 
 document.querySelectorAll(".edit-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-id");
-      editBook(id);
+    const id = btn.getAttribute("data-id");
+    openEditForm(id);
   });
 });
+
 }
 
-function editBook() {
-  document.getElementById("editBookCard").style.display = "block";
-  const bookToEdit = borrowedBooks.find(book => book.id === id);
-  if (bookToEdit) {
-      document.getElementById("bookTitle").value = bookToEdit.title;
-      document.getElementById("bookAuthor").value = bookToEdit.authorId;
-      editId = id;
-      submitBtn.textContent = "Update Record";
-  }
+
+function openEditForm(id) {
+  const book = allBooks.find(b => b.id == id);
+  if (!book) return;
+
+  document.querySelector(".form-card").style.display = "block";
+  edittitle.value = book.title;
+  editavailableCopies.value = book.availableCopies;
+  edittotalCopies.value = book.totalCopies;
+  editId = id;
 }
+
+
+editButton.addEventListener("click", async (e) => {
+  e.preventDefault(); // prevent form submission
+
+  const updatedBook = {
+    title: edittitle.value,
+    availableCopies: Number(editavailableCopies.value),
+    totalCopies: Number(edittotalCopies.value)
+    // Note: You're missing authorId if needed
+  };
+
+  try {
+    const response = await fetch(`${url}/books/edit/${editId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedBook)
+    });
+
+    if (response.ok) {
+      document.querySelector(".form-card").style.display = "none";
+      fetchData();
+    } else {
+      alert("Failed to update book.");
+    }
+  } catch (err) {
+    console.error("Error updating book", err);
+  }
+});
+
 
 searchInput.addEventListener("input", () => {
   const searchTerm = searchInput.value.toLowerCase();

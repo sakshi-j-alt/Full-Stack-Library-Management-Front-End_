@@ -313,19 +313,14 @@
 
     // PIE CHART: Genre Distribution
     const genreChart = document.getElementById("genreChart");
+    
     function fetchAndRenderGenreChart() {
-      fetch(`${url}/books`)
-        .then(res => res.json())
-        .then(booksData => {
-          const genreCounts = {};
-          booksData.forEach(book => {
-            const genre = book.genre;
-            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-          });
-
-          const genres = Object.keys(genreCounts);
-          const counts = Object.values(genreCounts);
-          const backgroundColors = [
+  fetch(`${url}/charts/genre-distribution`)
+    .then(res => res.json())
+    .then(data => {
+      const genres = data.map(item => item.genre);
+      const counts = data.map(item => item.count);
+      const backgroundColors = [
             'rgba(255, 99, 132, 0.7)',
             'rgba(54, 162, 235, 0.7)',
             'rgba(255, 206, 86, 0.7)',
@@ -380,69 +375,64 @@
         .catch(err => console.error("Genre Chart Error:", err));
     }
 
+   
+
     // BAR CHART: Monthly Active Users
     const monthlyUsersChart = document.getElementById("monthlyUsersChart");
-    function fetchAndRenderMonthlyUsers() {
-      fetch(`${url}/borrowrecords`)
-        .then(res => res.json())
-        .then(records => {
-          const monthlyUsersMap = {};
 
-          records.forEach(record => {
-            const date = new Date(record.borrowDate);
-            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+function fetchAndRenderMonthlyUsers() {
+  fetch(`${url}/charts/monthly-active-users`)
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.month);
+      const userCounts = data.map(item => item.activeUsers);
 
-            if (!monthlyUsersMap[monthKey]) {
-              monthlyUsersMap[monthKey] = new Set();
+      const barData = {
+        labels: labels,
+        datasets: [{
+          label: 'Active Users',
+          data: userCounts,
+          backgroundColor: 'rgba(54, 162, 235, 0.7)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      };
+
+      const barConfig = {
+        type: 'bar',
+        data: barData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Monthly Active Users',
+              font: { size: 18 }
             }
-            monthlyUsersMap[monthKey].add(record.userID);
-          });
-
-          const sortedMonths = Object.keys(monthlyUsersMap).sort();
-          const userCounts = sortedMonths.map(month => monthlyUsersMap[month].size);
-
-          const barData = {
-            labels: sortedMonths,
-            datasets: [{
-              label: 'Active Users',
-              data: userCounts,
-              backgroundColor: 'rgba(54, 162, 235, 0.7)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1
-            }]
-          };
-
-          const barConfig = {
-            type: 'bar',
-            data: barData,
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: 'Monthly Active Users',
-                  font: { size: 18 }
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  title: { display: true, text: "Number of Users" }
-                },
-                x: {
-                  title: { display: true, text: "Month" }
-                }
-              }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Number of Users" }
+            },
+            x: {
+              title: { display: true, text: "Month" }
             }
-          };
+          }
+        }
+      };
 
-          const ctx = monthlyUsersChart.getContext('2d');
-          window.usersBarChart = new Chart(ctx, barConfig);
-        })
-        .catch(err => console.error("User Chart Error:", err));
-    }
+      const ctx = monthlyUsersChart.getContext('2d');
+      window.usersBarChart?.destroy(); // destroy old chart if exists
+      window.usersBarChart = new Chart(ctx, barConfig);
+    })
+    .catch(err => console.error("User Chart Error:", err));
+}
+
+
+   
 
     // Load charts on page load
     window.addEventListener('load', () => {
