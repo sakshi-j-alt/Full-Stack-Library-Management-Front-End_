@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <script src="/js/script.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .custom-navbar {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+      }
+     
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container-fluid" id="book-list-content">
+      <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <a href="userDashboard.html" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+       
+      </div>
+      <form id="borrowForm" class="mb-4">
+        
+      
+        <div class="mb-3">
+          <label for="bookId" class="form-label">Book ID</label>
+          <input type="text" class="form-control" id="bookId" required>
+          <div class="invalid-feedback">Book ID is required.</div>
+        </div>
+      
+        <div class="mb-3">
+          <label for="borrowDate" class="form-label">Borrow Date</label>
+          <input type="date" class="form-control" id="borrowDate" required>
+          <div class="invalid-feedback">Borrow date is required.</div>
+        </div>
+      
+        <div class="mb-3">
+          <label for="returnDate" class="form-label">Return Date</label>
+          <input type="date" class="form-control" id="returnDate" required>
+          <div class="form-text">Return date is required.</div>
+        </div>
+      
+        
+        <button type="submit" class="btn btn-primary" id="submitBorrowBtn">Submit Borrow Record</button>
+      </form>
+      
+       
+    </div>
+  </body>
+</html>

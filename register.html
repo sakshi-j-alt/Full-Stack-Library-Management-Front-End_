@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register - Best Library</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+  
+    <!-- FontAwesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .custom-navbar {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+      }
+
+      .register-container {
+        max-width: 500px;
+        margin: 3rem auto;
+        padding: 2rem;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+      }
+
+      .form-link {
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow custom-navbar">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <i class="fa-solid fa-book fs-4 me-2"></i> Best Library
+        </a>
+      </div>
+    </nav>
+
+    <!-- Registration Form -->
+    <div class="register-container bg-light">
+      <h3 class="text-center mb-4">
+        <i class="fa fa-user-plus me-2"></i>Create Your Account
+      </h3>
+      <form id="registerForm">
+        <div class="mb-3">
+          <label for="name" class="form-label" >Full Name</label>
+          <input type="text" class="form-control" id="name" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label" >Email address</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter your email" required />
+          <div class="invalid-feedback">
+            Email already exist. Try again with new email.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="phone" class="form-label" >Phone Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="Enter phone number" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label" >Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter password" required />
+          <div class="invalid-feedback">
+            Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 special character.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="userType" class="form-label">User Type</label>
+          <select class="form-select" id="type" required>
+            <option value="">-- Select User Type --</option>
+            <option value="reader">Book Reader</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div class="d-grid mb-3">
+          <button type="submit" class="btn btn-primary" id="submitButton">
+            <i class="fa fa-user-check me-2"></i> Register
+          </button>
+        </div>
+
+        <div class="text-center form-link">
+          Already have an account? <a href="login.html">Login here</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const url = "http://localhost:8080/api/users"; 
+        let allUsers =[];
+        const form = document.getElementById("registerForm");
+        const userName = document.getElementById("name");
+        const mail = document.getElementById("email");
+        const password = document.getElementById("password");
+        const mob = document.getElementById("phone");
+        const type = document.getElementById("type");
+
+        
+        function validatePassword() {
+            const passVal = password.value;
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+            if (passRegex.test(passVal)) {
+              password.classList.add("is-valid");
+              password.classList.remove("is-invalid");
+              return true;
+            } else {
+              password.classList.add("is-invalid");
+              password.classList.remove("is-valid");
+              return false;
+            }
+          }
+          password.addEventListener("blur", validatePassword);
+
+          function validateMail(){
+            fetch(url)
+              .then((res) =>res.json())
+              .then((users) => {
+                const existingUser = users.find(
+                  (u) => u.email === mail.value
+                );
+                if(existingUser){
+                  mail.classList.add("is-invalid");
+                  mail.classList.remove("is-valid");
+                  return false;
+                }else{
+                  mail.classList.add("is-valid");
+                  mail.classList.remove("is-invalid");
+                  return true;
+                }
+               })
+          }
+          mail.addEventListener("blur", validateMail);
+  
+
+        form.addEventListener("submit", function (e){
+            e.preventDefault();
+            const valid = validatePassword() && validateMail();//validateUsername() & validatePassword() & validateEmail() & validateMobile() & validateUserType();
+
+           if(userName && mail && password && mob && type && valid){ 
+            const newUser ={
+                name: userName.value.trim(),
+                email: mail.value.trim(),
+                password :password.value.trim(),
+                phone: mob.value.trim(),
+                userType: type.value.trim()
+            };
+
+            fetch(url ,{
+                method :"POST",
+                headers :{"content-type":"application/json"},
+                body :JSON.stringify(newUser),
+            }).then(()=>{
+              window.location.href = "login.html";
+                alert("Registration successful!"); 
+                form.reset();
+                
+            })
+          }
+          else{
+            alert("fill all fields")
+          }
+        })
+
+
+      </script>
+  </body>
+</html>

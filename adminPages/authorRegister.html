@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add New Author</title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f3f6f9;
+    }
+    .form-card {
+      max-width: 600px;
+      margin: 80px auto;
+      margin-top: 10px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 50px;
+      background-color: #fff;
+    }
+    .form-card h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .form-control:focus {
+      box-shadow: 0 0 0 0.2rem rgba(1, 7, 18, 0.25);
+    }
+    .custom-navbar {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+      <a href="/adminDashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h2>🖋️ Author Registration</h2>
+    <form id="authorRegistrationForm">
+      <div class="mb-3">
+        <label for="newAuthorName" class="form-label">Author Name</label>
+        <input type="text" class="form-control" id="newAuthorName" required />
+      </div>
+      <div class="mb-3">
+        <label for="newAuthorBio" class="form-label">Author Bio</label>
+        <textarea class="form-control" id="newAuthorBio" rows="4" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Add Author</button>
+    </form>
+  </div>
+
+  
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="bootstrap.min (1).css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    .custom-navbar {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+    .card-custom, .book-card {
+      border: 1px solid #670678;
+      border-radius: 8px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-custom:hover, .book-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .card-header {
+      background-color: #670678;
+      font-weight: bold;
+    }
+    .card-body {
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+    .btn-outline-info {
+      color: white;
+      border-color: #670678;
+      padding: 0.5rem 1rem;
+    }
+    .btn-outline-info:hover {
+      background-color: #670678;
+      color: white;
+      border-color: #670678;
+    }
+    .book-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-info shadow custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="user.html">
+        <i class="fa-solid fa-book fs-4 me-2"></i> Library Management
+      </a>
+      <form class="d-flex ms-auto align-items-center">
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+            <i class="fa fa-user"></i> User
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            
+            <li><a class="dropdown-item" href="login.html">Logout</a></li>
+          </ul>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <aside class="bg-secondary text-white p-4" style="width: 350px; min-height: 100vh">
+      <h5 class="text-uppercase mb-4 text-white">Welcome User</h5>
+      <ul class="list-unstyled">
+        <li class="mb-2">
+          <button class="btn btn-outline-light w-100 text-white d-flex justify-content-between align-items-center"
+                  data-bs-toggle="collapse" data-bs-target="#dashboardCollapse">
+            <span><i class="fa fa-user me-2"></i> Profile</span>
+            <span>&#9660;</span>
+          </button>
+          <div class="collapse" id="dashboardCollapse">
+            <ul class="list-unstyled ps-3 mt-2">
+              <li><a href="userProfile.html" class="text-white d-block py-1" onclick="loadPage('per_info.html')">Personal Information</a></li>
+              
+              <li><a href="#" class="text-white d-block py-1" onclick="loadPage('borrowed_books.html')">Borrowed Books</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-white d-flex align-items-center" onclick="loadPage('history.html')">
+            <i class="fa fa-book-open me-2"></i> History
+          </a>
+        </li>
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-white d-flex align-items-center" onclick="loadPage('contact.html')">
+            <i class="fa fa-envelope me-2"></i> Contact Us
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="p-5 flex-grow-1 bg-light">
+      <div class="container">
+        <h2 class="mb-4 text-center">Available Books</h2>
+        <div class="mb-4">
+          <input type="text" id="bookSearch" class="form-control" placeholder="Search books by title or genre..." />
+        </div>
+        <div class="row" id="bookCardsContainer"></div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="bg-dark text-white text-center py-3 mt-auto">
+    &copy; 2025 User Dashboard. All rights reserved.
+  </footer>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <script>
+    const apiUrl = "http://localhost:3000";
+    const userId = "dea9"; 
+    const cardContainer = document.getElementById("bookCardsContainer");
+    const searchInput = document.getElementById("bookSearch");
+    let allBooks = [];
+    let borrowRecords = [];
+
+    function displayBooks(books) {
+      cardContainer.innerHTML = "";
+
+      if (books.length === 0) {
+        cardContainer.innerHTML = "<p class='text-muted'>No books found.</p>";
+        return;
+      }
+
+      books.forEach(book => {
+        const userBorrowed = borrowRecords.find(
+          record => record.userID === userId && record.bookID === book.id && record.status === "Pending"
+        );
+
+        const col = document.createElement("div");
+        col.className = "col-md-4 mb-4";
+
+        col.innerHTML = `
+          <div class="card h-100 shadow book-card">
+            <div class="card-body">
+              <h5 class="book-title">${book.Title}</h5>
+              <p><strong>Genre:</strong> ${book.Genre}</p>
+              <p><strong>Available:</strong> ${book.AvailableCopies} / ${book.TotalCopies}</p>
+              ${userBorrowed
+                ? `<button class="btn btn-warning mt-2 return-btn" data-id="${book.id}">Return</button>`
+                : `<button class="btn btn-info mt-2 borrow-btn" data-id="${book.id}" ${book.AvailableCopies <= 0 ? 'disabled' : ''}>Borrow</button>`}
+            </div>
+          </div>
+        `;
+
+        cardContainer.appendChild(col);
+      });
+
+      addBorrowListeners();
+      addReturnListeners();
+    }
+
+    function filterBooks(query) {
+      const filtered = allBooks.filter(book =>
+        book.Title.toLowerCase().includes(query) ||
+        book.Genre.toLowerCase().includes(query)
+      );
+      displayBooks(filtered);
+    }
+
+    function addBorrowListeners() {
+      document.querySelectorAll(".borrow-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const bookId = btn.dataset.id;
+          borrowBook(bookId);
+        });
+      });
+    }
+
+    function addReturnListeners() {
+      document.querySelectorAll(".return-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const bookId = btn.dataset.id;
+          returnBook(bookId);
+        });
+      });
+    }
+
+    async function borrowBook(bookId) {
+      const book = allBooks.find(b => b.id === bookId);
+      if (!book || book.AvailableCopies <= 0) return;
+
+      const newRecord = {
+        recordID: Math.floor(Math.random() * 10000),
+        userID: userId,
+        bookID: bookId,
+        borrowDate: new Date().toISOString().split("T")[0],
+        returnDate: "", 
+        status: "Pending"
+      };
+
+      await fetch(`${apiUrl}/borrowRecord`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRecord)
+      });
+
+      await fetch(`${apiUrl}/book/${bookId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ AvailableCopies: book.AvailableCopies - 1 })
+      });
+
+      loadAllData();
+    }
+
+    async function returnBook(bookId) {
+      const record = borrowRecords.find(
+        r => r.bookID === bookId && r.userID === userId && r.status === "Pending"
+      );
+      if (!record) return;
+
+      await fetch(`${apiUrl}/borrowRecord/${record.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "Returned",
+          returnDate: new Date().toISOString().split("T")[0]
+        })
+      });
+
+      const book = allBooks.find(b => b.id === bookId);
+      await fetch(`${apiUrl}/book/${bookId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ AvailableCopies: book.AvailableCopies + 1 })
+      });
+
+      loadAllData();
+    }
+
+    function loadAllData() {
+      Promise.all([
+        fetch(`${apiUrl}/book`).then(res => res.json()),
+        fetch(`${apiUrl}/borrowRecord`).then(res => res.json())
+      ])
+      .then(([books, records]) => {
+        allBooks = books;
+        borrowRecords = records;
+        displayBooks(allBooks);
+      });
+    }
+
+    searchInput.addEventListener("input", e => {
+      const query = e.target.value.toLowerCase().trim();
+      filterBooks(query);
+    });
+
+    loadAllData();
+  </script>
+</body>
+</html>

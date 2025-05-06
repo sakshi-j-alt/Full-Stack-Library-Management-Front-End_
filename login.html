@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Best Library</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <!-- FontAwesome Icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .custom-navbar {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+      }
+
+      .login-container {
+        max-width: 450px;
+        margin: 5rem auto;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: #fff;
+      }
+
+      .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+      }
+
+      .form-link {
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-primary shadow custom-navbar"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <i class="fa-solid fa-book fs-4 me-2"></i> Best Library
+        </a>
+      </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="login-container bg-light">
+      <h3 class="text-center mb-4"><i class="fa fa-user-circle me-2"></i>Login to Your Account</h3>
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username (Your Email)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="email"
+            placeholder="Enter username"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter password"
+          />
+        </div>
+        <div class="d-flex justify-content-between form-link mb-3">
+          <a href="#">Forgot Username?</a>
+          <a href="#">Forgot Password?</a>
+        </div>
+        <div class="d-grid mb-3">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-right-to-bracket me-2"></i> Login
+          </button>
+        </div>
+        <div class="text-center form-link">
+          Don’t have an account?
+          <a href="register.html">Create Account</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      
+      const email = document.getElementById("email");
+      const password= document.getElementById("password");
+      // document.getElementById("loginForm").addEventListener("submit", function (e) {
+      //   e.preventDefault();
+      //   verify();
+      // });
+
+      // function verify() {
+      //   fetch("http://localhost:3001/libraryUser")
+      //     .then(res => res.json())
+      //     .then(users => {
+      //       const user = users.find(u => u.Email === email.value && u.Password === password.value);
+      //       if (user) {
+      //         sessionStorage.setItem("userId", user.userId);
+      //         sessionStorage.setItem("userName", user.name);
+      //         sessionStorage.setItem("userType", user.userType);
+      //         if (user.UserType === "Admin") {
+      //           window.location.href = "adminDashboard.html";
+      //         } else {
+      //           sessionStorage.setItem("userId", user.id);
+      //           console.log("userId", user.id )
+      //           window.location.href = "userDashboard.html";
+                
+      //         }
+      //       } else {
+      //         alert("Invalid email or password.");
+      //       }
+      //     })
+      //     .catch(err => {
+      //       console.error("Error fetching users:", err);
+      //     });
+      // }
+      document.getElementById("loginForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  verify();
+});
+
+function verify() {
+  fetch("http://localhost:8080/api/users")
+    .then(res => res.json())
+    .then(users => {
+      const user = users.find(u => u.email === email.value && u.password === password.value);
+      if (user) {
+        sessionStorage.setItem("currentUser", JSON.stringify(user));
+        
+        if (user.userType === "Admin") {
+          window.location.href = "adminDashboard.html";
+        } else {
+          window.location.href = "userDashboard.html";
+        }
+      } else {
+        alert("Invalid email or password.");
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching users:", err);
+    });
+}
+    </script>
+    
+  </body>
+</html>

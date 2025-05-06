@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Reduce navbar height */
+
+    .custom-navbar {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+
+    /* Align "user" vertically */
+    .custom-user {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-outline-light {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    #book-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem;
+    }
+
+
+    #book-list .card {
+      width: 250px;
+      /* Increase width as needed */
+      min-height: 200px;
+      white-space: normal;
+      /* Allow text to wrap */
+      word-wrap: break-word;
+      flex-shrink: 0;
+      /* Prevent shrinking in scroll */
+
+
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="user.html">
+        <i class="fa-solid fa-book fs-4 me-2"></i> Best Library
+      </a>
+
+      <form class="d-flex ms-auto align-items-center">
+        <div class="input-group me-3">
+          <input class="form-control" type="search" placeholder="Search" />
+          <button class="btn btn-light" type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+
+        <a href="#" class="nav-link text-white me-3 mt-1">
+          <i class="fa fa-heart fs-5" onclick="loadPage('/userPages/wishList.html')"></i>
+        </a>
+
+        <!-- Notification bell icon -->
+        <a href="#" class="nav-link text-white me-3 mt-1 position-relative">
+          <i class="fa fa-bell fs-5"></i>
+          <!-- Optional: Notification dot -->
+          <span
+            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+            <span class="visually-hidden">New alerts</span>
+          </span>
+        </a>
+
+        <!-- user dropdown -->
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+            <i class="fa fa-user"></i> User
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" onclick="logout()">Logout</a></li>
+          </ul>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+  <!-- Sidebar & Content -->
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <aside class="bg-dark text-white p-4" style="width: 300px; min-height: 100vh">
+      <h5 class="text-uppercase mb-4 text-white">Navigation</h5>
+      <ul class="list-unstyled">
+        <!-- Dashboard Section -->
+        <li class="mb-2">
+          <button class="btn btn-outline-light w-100 text-start d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse" data-bs-target="#dashboardCollapse">
+            <span><i class="fa fa-user me-2"></i> Profile</span>
+            <span>&#9660;</span>
+            <!-- Downward Triangle -->
+          </button>
+          <div class="collapse" id="dashboardCollapse">
+            <ul class="list-unstyled ps-3 mt-2">
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('userPages/profile.html')">Personal Information</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('membership.html')">Memberships</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('userPages/borrowedBooks.html')">Borrowed
+                  Books</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- Resources -->
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center"
+            onclick="loadPage('/userPages/userHistory.html')">
+            <i class="fa fa-book-open me-2"></i> History
+          </a>
+        </li>
+
+        <!-- Reports -->
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center"
+            onclick="loadPage('userPages/contactUs.html')">
+            <i class="fa fa-envelope  me-2"></i> Contact Us
+          </a>
+        </li>
+
+
+        <!-- Log Out -->
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center" onclick="logout()">
+            <i class="fa fa-sign-out-alt me-2"></i> Log Out
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="p-5 flex-grow-1 bg-light">
+      <h2 class="mb-4">Welcome to user Dashboard</h2>
+      <h5 id="idtext">Your ID is </h5>
+      <div class="row g-4">
+        <!-- Recommended Books Row -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card shadow border-primary">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>📚 Recommended Books</span>
+                <a href="#" class="btn btn-sm btn-light" onclick="loadPage('userPages/bookList.html')">More →</a>
+              </div>
+              <div id="book-list" class="card-body overflow-auto" style="white-space: nowrap;">
+                <!-- Books will be injected here by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Cards Row -->
+        <div class="row g-4">
+          <!-- Personal Details -->
+          <div class="col-md-4">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">👤 Personal Details</div>
+              <div class="card-body">
+                <h5 class="card-title">Name: Sakshi Jadhav</h5>
+                <p class="card-text">Email: sakshi@email.com</p>
+                <a href="#" class="btn btn-outline-primary" onclick="loadPage('userPages/profile.html')">Edit Profile</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Memberships -->
+          <div class="col-md-4">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">📇 Membership</div>
+              <div class="card-body">
+                <h5 class="card-title">Active Member</h5>
+                <p class="card-text">Since: Jan 2022</p>
+                <a href="#" class="btn btn-outline-primary">View Status</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Borrowed Books -->
+          <div class="col-md-4">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">📖 Borrowed Books</div>
+              <div class="card-body">
+                <h5 class="card-title">Currently Borrowed</h5>
+                <p class="card-text" id="currentBooks"></p>
+                <a href="#" class="btn btn-outline-primary" onclick="loadPage('/userPages/borrowedBooks.html')">View Books</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-auto">
+    &copy; 2025 User Dashboard. All rights reserved.
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    const url = "http://localhost:8080/api";
+    function logout() {
+      sessionStorage.clear();
+      sessionStorage.setItem("loggedOut", "true");
+      window.location.href = "index.html";
+    }
+    // const urlBooks = "http://localhost:3001/Books";
+    let allBooks = [];
+    // const AuthorUrl = "http://localhost:3001/Authors";
+    let AuthorName = [];
+    // const BorrowUrl = "http://localhost:3001/BorrowRecords";
+
+    async function fetchData() {
+
+      try {
+        const [bookRes, authorRes] = await Promise.all([
+          fetch(`${url}/books`),
+          fetch(`${url}/authors`),
+        ]);
+
+        allBooks = await bookRes.json();
+        AuthorName = await authorRes.json();
+
+        displayBooks(allBooks);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+
+    function displayBooks(bookList) {
+      const container = document.getElementById("book-list");
+      container.innerHTML = "";
+
+      // Limit to 4 books for initial display
+      const visibleBooks = bookList.slice(0, 4);
+
+      visibleBooks.forEach((book) => {
+        const eachAuthor = AuthorName.find((a) => String(a.id) === String(book.authorId));
+        const authorName = eachAuthor ? eachAuthor.name : "Unknown";
+
+        const card = document.createElement("div");
+        card.className = "d-inline-block me-3 text-start";
+        card.style.width = "180px";
+        const likedBook = {
+          id: book.id,
+          title: book.title,
+          author: authorName,
+          availableCopies: book.availableCopies,
+          totalCopies: book.totalCopies
+        }
+        card.innerHTML = `
+      <div class="card shadow border-secondary">
+        <div class="card-body p-2">
+          <h6 class="card-title fw-bold" id="title">${book.title}</h6>
+          <p class="mb-1" id="auth"><strong>Author:</strong> ${authorName}</p>
+          <p class="mb-1"><strong>Genre:</strong> ${book.genre}</p>
+          <p class="mb-1"><strong>Available:</strong> ${book.availableCopies}/${book.totalCopies}</p>
+          <button onclick='addToWishlist(${JSON.stringify(likedBook)} )' class="btn btn-sm btn-outline-primary w-100">Add to Wishlist</button>
+        </div>
+      </div>
+    `;
+
+        container.appendChild(card);
+      });
+
+      // Show "More →" button functionality
+
+    }
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get current user from session storage
+      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+      // Redirect to login if no user found
+      if (!currentUser) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Update dashboard with user info
+      updateDashboard(currentUser);
+      fetchData();// Your existing book fetching function
+    });
+
+    function updateDashboard(user) {
+      // Update welcome message
+      document.querySelector('h2').textContent = `Welcome, ${user.name}! and ID is ${user.id}`;
+      
+
+      // Update personal details card
+      document.querySelector('.col-md-4:nth-child(1) .card-title').textContent = `Name: ${user.name}`;
+      document.querySelector('.col-md-4:nth-child(1) .card-text').innerHTML = `
+    <p class="card-text">Email: ${user.email}</p>
+    <p class="card-text">Phone: ${user.phone || 'Not provided'}</p>
+  `;
+
+      // Update user dropdown in navbar
+      document.querySelector('.dropdown-toggle').innerHTML = `
+    <i class="fa fa-user"></i> ${user.name}
+  `;
+
+      // Update membership info (customize based on your data structure)
+      const memberSince = user.MemberSince || '2024'; // Default if not available
+      document.querySelector('.col-md-4:nth-child(2) .card-title').textContent =
+        `${user.userType === 'Admin' ? 'Admin' : 'Member'} Account`;
+      document.querySelector('.col-md-4:nth-child(2) .card-text').textContent =
+        `Since: ${memberSince}`;
+    }
+
+    function borrowedCount() {
+      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+
+      fetch(`${url}/borrowrecords`)
+        .then(response => response.json())
+        .then(data => {
+          let count = 0;
+          data.forEach((b) => {
+            if (b.status === "Not Returned" && b.userID === currentUser.id)
+            {
+              count++;
+            }
+          })
+          document.getElementById("currentBooks").innerText = count;
+        })
+    }
+    borrowedCount();
+
+    function addToWishlist(book) {
+      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('Please login first');
+        return;
+      }
+
+      const wishlistKey = `user_${currentUser.id}_wishlist`;
+      const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+
+      // Check if book already exists
+      const exists = wishlist.some(b => b.id === book.id);
+      if (exists) {
+        alert("This book is already in your wishlist!");
+        return;
+      }
+
+      wishlist.push(book);
+      localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
+      alert(`${book.title} added to your wishlist!`);
+    }
+
+    // Modified logout function
+    function logout() {
+      sessionStorage.removeItem('currentUser');
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Book</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      body {
+        background-color: #f3f6f9;
+      }
+      .form-card {
+        max-width: 600px;
+        margin: 80px auto;
+        margin-top: 10px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 50px;
+        background-color: #fff;
+      }
+      .form-card h2 {
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(1, 7, 18, 0.25);
+      }
+
+      .custom-navbar {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container-fluid" id="book-list-content">
+      <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <a href="/adminDashboard.html" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Back
+        </a> 
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h2>📚 Add New Book</h2>
+        <form id="bookRegistrationForm">
+          <div class="mb-3">
+            <label for="title" class="form-label">Book Title</label>
+            <input type="text" class="form-control" id="title" required />
+          </div>
+         
+        
+          <div class="mb-3">
+              <label for="authorSelect" class="form-label">Author Name</label>
+              <select class="form-control" id="authorSelect" required> <!-- options will be here --></select>
+            </div>
+
+        
+          <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <select class="form-select" id="genre" required>
+              <option value="">-- Select Genre --</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Mystery">Mystery</option>
+              <option value="Science Fiction">Science Fiction</option>
+              <option value="Fantasy">Fantasy</option>
+              <option value="Romance">Romance</option>
+              <option value="Non-fiction">Non-fiction</option>
+              <option value="Biography">Biography</option>
+              <option value="Thriller">Thriller</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="totalCopies" class="form-label">Total Copies</label>
+            <input
+              type="number"
+              class="form-control"
+              id="totalCopies"
+              min="1"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="availableCopies" class="form-label"
+              >Available Copies</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="availableCopies"
+              min="0"
+              required
+            />
+          </div>
+          
+        <button  class="btn btn-primary w-100">
+          Submit Book
+        </button>
+        
+      </form>
+      </div>
+   
+
+  </body>
+</html>

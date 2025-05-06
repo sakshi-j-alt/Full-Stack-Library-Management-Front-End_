@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    <script src="script.js"></script>
+
+    <!-- FontAwesome Icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div id="main-content">
+        <main class="p-5 flex-grow-1 bg-light" >
+          <h2 class="mb-4">Welcome to Admin Dashboard</h2>
+          <div class="row g-4">
+            <!-- Card 1 -->
+            <div class="col-md-6">
+              <div class="card shadow border-primary h-100">
+                <div class="card-header bg-primary text-white">
+                  Library Inventory
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">📚 Total Books</h5>
+                  <p class="card-text">1,240 books available</p>
+                  <a href="#" class="btn btn-outline-primary me-2"
+                    >View Details</a
+                  >
+                  <a href="#" class="btn btn-outline-primary me-2">Add Book</a>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Card 2 -->
+            <div class="col-md-6">
+              <div class="card shadow border-primary h-100">
+                <div class="card-header bg-primary text-white">
+                  Currently Borrowed
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">📖 Books Issued</h5>
+                  <p class="card-text">325 books currently borrowed</p>
+                  <a href="pages/book-issued.html" class="btn btn-outline-primary"
+                    >View Details</a
+                  >
+                </div>
+              </div>
+            </div>
+  
+            <!-- Card 3 -->
+            <div class="col-md-6">
+              <div class="card shadow border-primary h-100">
+                <div class="card-header bg-primary text-white">Membership</div>
+                <div class="card-body">
+                  <h5 class="card-title">👥 Registered Members</h5>
+                  <p class="card-text">880 active members</p>
+                  <a href="#" class="btn btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Card 4 -->
+            <div class="col-md-6">
+              <div class="card shadow border-primary h-100">
+                <div class="card-header bg-primary text-white">Alerts</div>
+                <div class="card-body">
+                  <h5 class="card-title">⏰ Overdue Returns</h5>
+                  <p class="card-text">15 books overdue</p>
+                  <a href="#" class="btn btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div> 
+</body>
+</html>

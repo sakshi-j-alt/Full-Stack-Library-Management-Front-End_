@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <script src="js/script.js"></script>
+
+
+  <!-- FontAwesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    /* Reduce navbar height */
+    .custom-navbar {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
+
+    /* Align "Admin" vertically */
+    .custom-admin {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-outline-light {
+      border: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="admin.html">
+        <i class="fa-solid fa-book fs-4 me-2"></i> Best Library
+      </a>
+
+      <form class="d-flex ms-auto align-items-center">
+        <div class="input-group me-3">
+          <input class="form-control" type="search" placeholder="Search" />
+          <button class="btn btn-light" type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+
+        <!-- Notification bell icon -->
+        <a href="#" class="nav-link text-white me-3 mt-1 position-relative">
+          <i class="fa fa-bell fs-5"></i>
+          <!-- Optional: Notification dot -->
+          <span
+            class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+            <span class="visually-hidden">New alerts</span>
+          </span>
+        </a>
+
+        <!-- Admin dropdown -->
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" data-bs-toggle="dropdown">
+            <i class="fa fa-user"></i> Admin
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" onclick="logout()">Logout</a></li>
+          </ul>
+        </div>
+      </form>
+    </div>
+  </nav>
+
+  <!-- Sidebar & Content -->
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <aside class="bg-dark text-white p-4 Sidebar " style="width: 300px; min-height: 100vh">
+      <h5 class="text-uppercase mb-4 text-white">Navigation</h5>
+      <ul class="list-unstyled">
+        <!-- Dashboard Section -->
+        <li class="mb-2">
+          <button class="btn btn-outline-light w-100 text-start d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse" data-bs-target="#dashboardCollapse">
+            <span><i class="fa fa-chart-line me-2"></i> Dashboard</span>
+            <span>&#9660;</span>
+            <!-- Downward Triangle -->
+          </button>
+          <div class="collapse" id="dashboardCollapse">
+            <ul class="list-unstyled ps-3 mt-2">
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('adminPages/totalBooks.html')">Total
+                  Books</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('/adminPages/issueBooks.html')">Issued Books</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('/adminPages/memberList.html')">Registered
+                  Members</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('/adminPages/history.html')">Borrowing History</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- Resources -->
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center"
+            onclick="loadPage('resources.html')">
+            <i class="fa fa-book-open me-2"></i> Resources
+          </a>
+        </li>
+
+        <!-- Reports
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center"
+            onclick="loadPage('adminPages/reports.html')">
+            <i class="fa fa-chart-pie me-2"></i> Reports
+          </a>
+        </li> -->
+
+        <!-- User Queries -->
+        <li class="mb-2">
+          <button class="btn btn-outline-light w-100 text-start d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse" data-bs-target="#queriesCollapse">
+            <span><i class="fa fa-share-square me-2"></i> User Queries</span>
+            <span>&#9660;</span>
+            <!-- Downward Triangle -->
+          </button>
+          <div class="collapse" id="queriesCollapse">
+            <ul class="list-unstyled ps-3 mt-2">
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('/adminPages/nonResolvedQueries.html')">New Queries</a>
+              </li>
+              <li>
+                <a href="#" class="text-white d-block py-1" onclick="loadPage('resolved_queries.html')">Resolved
+                  Queries</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- Log Out -->
+        <li class="mb-2">
+          <a href="#" class="btn btn-outline-light w-100 text-start d-flex align-items-center" onclick="logout()">
+            <i class="fa fa-sign-out-alt me-2"></i> Log Out
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="main-content" class="flex-grow-1 bg-light">
+      <main class="p-5 flex-grow-1 bg-light">
+        <h2 class="mb-4">Welcome to Admin Dashboard</h2>
+        <div class="row g-4">
+          <!-- Card 1 -->
+          <div class="col-md-6">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">
+                Library Inventory
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">📚 Total Books</h5>
+                <p class="card-text" id="totalBooks"></p>
+                <a onclick="loadPage('adminPages/totalBooks.html')" class="btn btn-outline-primary me-2">View
+                  Details</a>
+                <a onclick="loadPage('adminPages/addBook.html')" class="btn btn-outline-primary me-2">Add Book</a>
+
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="col-md-6">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">
+                Currently Borrowed
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">📖 Books Issued</h5>
+                <p class="card-text" id="issued"></p>
+                <a onclick="loadPage('adminPages/issueBooks.html')"  class="btn btn-outline-primary">View Details</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="col-md-6">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">Membership</div>
+              <div class="card-body">
+                <h5 class="card-title">👥 Registered Members</h5>
+                <p class="card-text" id="member"></p>
+                <a href="#" class="btn btn-outline-primary" onclick="loadPage('/adminPages/memberList.html')">View
+                  Details</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="col-md-6">
+            <div class="card shadow border-primary h-100">
+              <div class="card-header bg-primary text-white">Alerts</div>
+              <div class="card-body">
+                <h5 class="card-title">📚 History</h5>
+                <p class="card-text">Past records of Users</p>
+                <a href="#" class="btn btn-outline-primary" onclick="loadPage('/adminPages/history.html')">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">📊 Library Reports Dashboard</h2>
+        
+     
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="card-title mb-0">Books Distribution by Genre</h5>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="genreChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="card-title mb-0">Monthly Active Users</h5>
+            </div>
+            <div class="card-body height-100">
+              <div class="chart-container">
+                <canvas id="monthlyUsersChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </main>
+    </div>
+  </div>
+    <!-- reports -->
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-auto">
+    &copy; 2025 Admin Dashboard. All rights reserved.
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    
+    const url = "http://localhost:8080/api";
+    function bookCount(){ fetch(`${url}/books`) 
+      .then(response => response.json())
+      .then(data => {
+        const count = data.length;
+        document.getElementById("totalBooks").innerText =count ;
+      })}
+   bookCount();
+
+   function memberCount(){ fetch(`${url}/users`) 
+      .then(response => response.json())
+      .then(data => {
+        const count = data.length;
+        document.getElementById("member").innerText =count-1 ;
+      })}
+      memberCount();
+
+   function bookCount(){ fetch(`${url}/books`) 
+      .then(response => response.json())
+      .then(data => {
+        const count = data.length;
+        document.getElementById("totalBooks").innerText =count ;
+      })}
+   bookCount();
+
+   function borrowedCount(){ fetch(`${url}/borrowrecords`) 
+      .then(response => response.json())
+      .then(data => {
+        let count =0;
+        data.forEach((b)=>{
+          if(b.status === "Not Returned"){
+          count++;
+        }
+        })
+        document.getElementById("issued").innerText =count ;
+      })}
+      borrowedCount();
+  
+    function logout() {
+      sessionStorage.clear();
+      sessionStorage.setItem("loggedOut", "true");
+      window.location.href = "index.html";
+    }
+
+    // const urlsBook = "http://localhost:3001/Books";
+    // const urlsBorrow = "http://localhost:3001/BorrowRecords";
+
+    // PIE CHART: Genre Distribution
+    const genreChart = document.getElementById("genreChart");
+    function fetchAndRenderGenreChart() {
+      fetch(`${url}/books`)
+        .then(res => res.json())
+        .then(booksData => {
+          const genreCounts = {};
+          booksData.forEach(book => {
+            const genre = book.genre;
+            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+          });
+
+          const genres = Object.keys(genreCounts);
+          const counts = Object.values(genreCounts);
+          const backgroundColors = [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)'
+          ];
+
+          const pieData = {
+            labels: genres,
+            datasets: [{
+              label: 'Number of Books',
+              data: counts,
+              backgroundColor: backgroundColors.slice(0, genres.length),
+              borderWidth: 1
+            }]
+          };
+
+          const pieConfig = {
+            type: 'pie',
+            data: pieData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'right'
+                },
+                title: {
+                  display: true,
+                  text: 'Book Distribution by Genre',
+                  font: { size: 18 }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.raw || 0;
+                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                      const percentage = Math.round((value / total) * 100);
+                      return `${label}: ${value} books (${percentage}%)`;
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          const ctx = genreChart.getContext('2d');
+          window.genrePieChart = new Chart(ctx, pieConfig);
+        })
+        .catch(err => console.error("Genre Chart Error:", err));
+    }
+
+    // BAR CHART: Monthly Active Users
+    const monthlyUsersChart = document.getElementById("monthlyUsersChart");
+    function fetchAndRenderMonthlyUsers() {
+      fetch(`${url}/borrowrecords`)
+        .then(res => res.json())
+        .then(records => {
+          const monthlyUsersMap = {};
+
+          records.forEach(record => {
+            const date = new Date(record.borrowDate);
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+            if (!monthlyUsersMap[monthKey]) {
+              monthlyUsersMap[monthKey] = new Set();
+            }
+            monthlyUsersMap[monthKey].add(record.userID);
+          });
+
+          const sortedMonths = Object.keys(monthlyUsersMap).sort();
+          const userCounts = sortedMonths.map(month => monthlyUsersMap[month].size);
+
+          const barData = {
+            labels: sortedMonths,
+            datasets: [{
+              label: 'Active Users',
+              data: userCounts,
+              backgroundColor: 'rgba(54, 162, 235, 0.7)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          };
+
+          const barConfig = {
+            type: 'bar',
+            data: barData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                title: {
+                  display: true,
+                  text: 'Monthly Active Users',
+                  font: { size: 18 }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: { display: true, text: "Number of Users" }
+                },
+                x: {
+                  title: { display: true, text: "Month" }
+                }
+              }
+            }
+          };
+
+          const ctx = monthlyUsersChart.getContext('2d');
+          window.usersBarChart = new Chart(ctx, barConfig);
+        })
+        .catch(err => console.error("User Chart Error:", err));
+    }
+
+    // Load charts on page load
+    window.addEventListener('load', () => {
+      fetchAndRenderGenreChart();
+      fetchAndRenderMonthlyUsers();
+    });
+  </script>
+</body>
+
+</html>
