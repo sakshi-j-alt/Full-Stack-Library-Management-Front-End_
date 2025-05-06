@@ -77,6 +77,11 @@ function loadPage(page) {
                 script.src = "/js/nonResolvedQueries.js";
                 document.body.appendChild(script);
             }
+            else if (page.includes("resolvedQueries.html")) {
+                const script = document.createElement("script");
+                script.src = "/js/resolvedQueries.js";
+                document.body.appendChild(script);
+            }
            
         })
         .catch(err => {

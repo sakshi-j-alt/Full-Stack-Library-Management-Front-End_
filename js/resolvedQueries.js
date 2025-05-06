@@ -1,6 +1,6 @@
-const notResolved= "Not Resolved";
+
 function fetchData() {
-fetch(`${url}/query/status/${notResolved}`)
+fetch(`${url}/query/status/Resolved`)
       .then(response => response.json())
       .then(data => {
         const tableBody = document.getElementById('queryTableBody');
@@ -15,25 +15,11 @@ fetch(`${url}/query/status/${notResolved}`)
             <td>${query.subject}</td>
             <td>${query.message}</td>
            
-            <td>
-              <button class="btn btn-sm btn-success" onclick="markResolved(${query.id})">
-                 Resolve
-              </button>
-            </td>
+          
           `;
           tableBody.appendChild(row);
         });
       });
     }
-      function markResolved(id) {
-        fetch(`${url}/query/${id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        }).then(() => 
-            fetchData());;
-      
-      
-    }
+     
     fetchData();
