@@ -1,10 +1,8 @@
 
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-
-  function loadWishlist(userId) {
+  function loadWishlist() {
    
-    const wishlistKey = `user_${userId}_wishlist`;
-    const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+    const wishlistKey = `user_${getUserId()}_wishlist`;
+    const wishlist = JSON.parse(sessionStorage.getItem(wishlistKey)) || [];
     
     updateWishlistCount(wishlist.length);
     displayBooks(wishlist);
@@ -45,50 +43,42 @@
       tableBody.appendChild(row);
     });
   }
-  
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.trim();
+    filterWishlist(searchTerm);
+  });
   function filterWishlist(searchTerm) {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) return;
-    
-    const wishlistKey = `user_${currentUser.id}_wishlist`;
-    const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
-    
+    const wishlistKey = `user_${getUserId()}_wishlist`;
+    const wishlist = JSON.parse(sessionStorage.getItem(wishlistKey)) || [];
     if (!searchTerm) {
       displayBooks(wishlist);
       return;
     }
-    
-    const filtered = wishlist.filter(book => 
-      book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    displayBooks(filtered);
+   
+     const filtered = wishlist.filter(book => 
+  (book.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+  (book.author || '').toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+      displayBooks(filtered);
   }
   
   function removeFromWishlist(bookId) {
     if (!confirm('Are you sure you want to remove this book from your wishlist?')) {
       return;
     }
-    
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) return;
-    
-    const wishlistKey = `user_${currentUser.id}_wishlist`;
-    let wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
-    
-    // Filter out the book to be removed
+    const userId = getUserId();
+    if (!userId) {
+      alert('User not logged in!');
+      return;
+    }
+    const wishlistKey = `user_${userId}_wishlist`;
+    let wishlist = JSON.parse(sessionStorage.getItem(wishlistKey)) || [];
     wishlist = wishlist.filter(book => book.id.toString() !== bookId.toString());
-  
-    
-    // Save back to localStorage
-    localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-    
-    // Update the display
+    sessionStorage.setItem(wishlistKey, JSON.stringify(wishlist));
     updateWishlistCount(wishlist.length);
     displayBooks(wishlist);
-    
-    // Optional: Show a confirmation message
     alert('Book removed from your wishlist!');
   }
   
@@ -96,4 +86,4 @@
     const countElement = document.getElementById('wishlistCount');
     countElement.textContent = `${count} ${count === 1 ? 'book' : 'books'}`;
   }
-  loadWishlist(currentUser.id);
+  loadWishlist();

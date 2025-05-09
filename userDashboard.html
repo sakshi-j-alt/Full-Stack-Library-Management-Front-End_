@@ -91,7 +91,7 @@
             <i class="fa fa-user"></i> User
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#" onclick="loadPage('userPages/profile.html')">Profile</a></li>
             <li><a class="dropdown-item" onclick="logout()">Logout</a></li>
           </ul>
         </div>
@@ -182,8 +182,8 @@
             <div class="card shadow border-primary h-100">
               <div class="card-header bg-primary text-white">👤 Personal Details</div>
               <div class="card-body">
-                <h5 class="card-title">Name: Sakshi Jadhav</h5>
-                <p class="card-text">Email: sakshi@email.com</p>
+                <h5 class="card-title" id="user_name"></h5>
+                <p class="card-text" id="user_email"></p>
                 <a href="#" class="btn btn-outline-primary" onclick="loadPage('userPages/profile.html')">Edit Profile</a>
               </div>
             </div>
@@ -227,33 +227,35 @@
   <script src="js/script.js"></script>
   <script>
     const url = "http://localhost:8080/api";
-    function logout() {
-      sessionStorage.clear();
-      sessionStorage.setItem("loggedOut", "true");
-      window.location.href = "index.html";
-    }
-    // const urlBooks = "http://localhost:3001/Books";
+    
     let allBooks = [];
-    // const AuthorUrl = "http://localhost:3001/Authors";
     let AuthorName = [];
-    // const BorrowUrl = "http://localhost:3001/BorrowRecords";
 
-    async function fetchData() {
+    const token = localStorage.getItem('token');
+if (!token) {
+  window.location.href = "index.html";
+}
 
-      try {
-        const [bookRes, authorRes] = await Promise.all([
-          fetch(`${url}/books`),
-          fetch(`${url}/authors`),
-        ]);
+async function fetchData() {
+  try {
+    const [bookRes, authorRes] = await Promise.all([
+      fetch(`${url}/books`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+      fetch(`${url}/authors`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+    ]);
 
-        allBooks = await bookRes.json();
-        AuthorName = await authorRes.json();
+    allBooks = await bookRes.json();
+    AuthorName = await authorRes.json();
 
-        displayBooks(allBooks);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
+    displayBooks(allBooks);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
 
 
     function displayBooks(bookList) {
@@ -295,95 +297,78 @@
       // Show "More →" button functionality
 
     }
-
-
-
+document.getElementById("user_name").innerText = `Name: ${getName()}`;
+document.getElementById("user_email").innerText = `Email: ${getUserEmail()}`;
 
     document.addEventListener('DOMContentLoaded', function () {
-      // Get current user from session storage
-      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+  updateDashboard();
+      fetchData();
+});
 
-      // Redirect to login if no user found
-      if (!currentUser) {
-        window.location.href = 'index.html';
-        return;
-      }
 
-      // Update dashboard with user info
-      updateDashboard(currentUser);
-      fetchData();// Your existing book fetching function
-    });
+   
 
-    function updateDashboard(user) {
+    function updateDashboard() {
       // Update welcome message
-      document.querySelector('h2').textContent = `Welcome, ${user.name}! and ID is ${user.id}`;
+      document.querySelector('h2').textContent = `Welcome, ${getName()}! and ID is ${getUserId()}`;
       
 
       // Update personal details card
-      document.querySelector('.col-md-4:nth-child(1) .card-title').textContent = `Name: ${user.name}`;
+      document.querySelector('.col-md-4:nth-child(1) .card-title').textContent = `Name: ${getName()}`;
       document.querySelector('.col-md-4:nth-child(1) .card-text').innerHTML = `
-    <p class="card-text">Email: ${user.email}</p>
-    <p class="card-text">Phone: ${user.phone || 'Not provided'}</p>
+    <p class="card-text">Email: ${getUserEmail()}</p>
+    <p class="card-text">Phone: ${getPhone() || 'Not provided'}</p>
   `;
 
       // Update user dropdown in navbar
       document.querySelector('.dropdown-toggle').innerHTML = `
-    <i class="fa fa-user"></i> ${user.name}
+    <i class="fa fa-user"></i> ${getName()}
   `;
 
-      // Update membership info (customize based on your data structure)
-      const memberSince = user.MemberSince || '2024'; // Default if not available
-      document.querySelector('.col-md-4:nth-child(2) .card-title').textContent =
-        `${user.userType === 'Admin' ? 'Admin' : 'Member'} Account`;
-      document.querySelector('.col-md-4:nth-child(2) .card-text').textContent =
-        `Since: ${memberSince}`;
     }
 
     function borrowedCount() {
-      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+  // const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+  fetch(`${url}/borrowrecords`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  })
+    .then(response => response.json())
+    .then(data => {
+      let count = 0;
+      data.forEach((b) => {
+        if (b.status === "Not Returned" && b.userID === getUserId()) {
+          count++;
+        }
+      })
+      document.getElementById("currentBooks").innerText = count;
+    })
+}
 
-      fetch(`${url}/borrowrecords`)
-        .then(response => response.json())
-        .then(data => {
-          let count = 0;
-          data.forEach((b) => {
-            if (b.status === "Not Returned" && b.userID === currentUser.id)
-            {
-              count++;
-            }
-          })
-          document.getElementById("currentBooks").innerText = count;
-        })
-    }
     borrowedCount();
 
     function addToWishlist(book) {
-      const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-      if (!currentUser) {
-        alert('Please login first');
-        return;
-      }
+  
+  const wishlistKey = `user_${getUserId()}_wishlist`;
+  const wishlist = JSON.parse(sessionStorage.getItem(wishlistKey)) || [];
 
-      const wishlistKey = `user_${currentUser.id}_wishlist`;
-      const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+  // Check if book already exists
+  const exists = wishlist.some(b => b.id === book.id);
+  if (exists) {
+    alert("This book is already in your wishlist!");
+    return;
+  }
 
-      // Check if book already exists
-      const exists = wishlist.some(b => b.id === book.id);
-      if (exists) {
-        alert("This book is already in your wishlist!");
-        return;
-      }
+  wishlist.push(book);
+  sessionStorage.setItem(wishlistKey, JSON.stringify(wishlist));
+  alert(`${book.title} added to your wishlist!`);
+}
 
-      wishlist.push(book);
-      localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-      alert(`${book.title} added to your wishlist!`);
-    }
-
-    // Modified logout function
-    function logout() {
-      sessionStorage.removeItem('currentUser');
-      window.location.href = "index.html";
-    }
+   
   </script>
 </body>
 

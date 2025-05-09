@@ -1,22 +1,23 @@
-const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-// const borrowurl ="`${url}/borrowrecords`";
 let borrowed=[];
-// const urlAllBoooks = `${url}/books`;
 let availableBooks = [];
  
 function fetchBorrowedBooks() {
-  fetch(`${url}/borrowrecords`)
+  fetch(`${url}/borrowrecords`,{
+    headers: { "Authorization": `Bearer ${token}` }
+  })
     .then(response => response.json())
     .then(data => {
         
-      borrowed = data.filter(record => record.userID === currentUser.id && record.status === 'Returned');
+      borrowed = data.filter(record => record.userID === getUserId() && record.status === 'Returned');
     
       displayBorrowed(borrowed);
     })
     .catch(error => console.error('Error fetching borrowed books:', error));
 }
 function fetchAllBooks() {
-    fetch(`${url}/books`)
+    fetch(`${url}/books`,{
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then(response => response.json())
       .then(data => {
         availableBooks = data;

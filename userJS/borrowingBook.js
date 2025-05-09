@@ -1,6 +1,6 @@
 const searchInput = document.getElementById("searchInput");
 let borrowedBooks = [];
-let allLibaryBooks = [];
+let AllLibaryBooks = [];
 // const urlBorrowedBooks = "http://localhost:3001/BorrowRecords";
 const bookId = document.getElementById("bookId");
 const borrowDate = document.getElementById("borrowDate");
@@ -15,34 +15,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// async function fetchBooks() {
-//     try {
-//       const [bookRes, borrowedres] = await Promise.all([
-//         fetch(urlAllBooks),
-//         fetch(urlBooks),
-//       ]);
-  
-//       AllLibaryBooks = await bookRes.json();
-//       borrowedBooks = await borrowedres.json();
-  
-//       displayBooks(borrowedBooks);
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//     }
-//   }
-
 async function fetchBooks() {
   try {
     const [bookRes, borrowedres] = await Promise.all([
-      fetch(`${url}/books`),
-      fetch(`${url}/borrowrecords`),
+      fetch(`${url}/books`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+      fetch(`${url}/borrowrecords`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
     ]);
 
     AllLibaryBooks = await bookRes.json();
     const allBorrowed = await borrowedres.json();
 
     // Filter to current user
-    borrowedBooks = allBorrowed.filter((record) => record.userID === currentUser.id);
+    borrowedBooks = allBorrowed.filter((record) => record.userID === getUserId());
 
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -55,7 +43,7 @@ function handleFormSubmit(e) {
     e.preventDefault();
     
     const borrowed = {
-      userID: currentUser.id,
+      userID: getUserId(),
       bookID: bookId.value.trim(),
       borrowDate: borrowDate.value.trim(),
       returnDate: inputReturnDate.value.trim(),
@@ -64,16 +52,21 @@ function handleFormSubmit(e) {
     const book = AllLibaryBooks.find(b => b.id === parseInt(borrowed.bookID));
 
     const id = book.id;
-      fetch(`${url}/borrowrecords`, {
+      fetch(`${url}/borrowrecords`,  {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 
+           "Authorization": `Bearer ${token}`
+         },
         body: JSON.stringify(borrowed)
       })
       .then(() => {
+        alert("Book borrowed successfully!");
         
         return fetch(`${url}/books/availableCount/${id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" ,
+             "Authorization": `Bearer ${token}`
+          },
           body: JSON.stringify({ availableCopies: book.availableCopies - 1 })
         });
       })

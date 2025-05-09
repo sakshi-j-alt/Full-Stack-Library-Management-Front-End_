@@ -17,7 +17,8 @@
             const response = await fetch('http://localhost:8080/api/query', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(jsonData)
             })

@@ -1,11 +1,16 @@
-const searchInput = document.getElementById("searchInput");
+const searchInput1 = document.getElementById("searchInput");
 const tableBody = document.getElementById("tableBody");
-
+allBooks = [];
+AuthorName = [];
 async function fetchData() {
   try {
     const [bookRes, authorRes] = await Promise.all([
-      fetch(`${url}/books`),
-      fetch(`${url}/authors`),
+      fetch(`${url}/books`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
+      fetch(`${url}/authors`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }),
     ]);
 
     allBooks = await bookRes.json();
@@ -17,10 +22,12 @@ async function fetchData() {
   }
 }
 
-function displayBooks(bookList) {
+
+
+function displayBooks(allBooks) {
   tableBody.innerHTML = "";
 
-  bookList.forEach((book) => {
+  allBooks.forEach((book) => {
     const eachAuthor = AuthorName.find((a) => String(a.id) === String(book.authorId));
     const authorName = eachAuthor ? eachAuthor.name : "Unknown";
     const likedBook = {
@@ -48,35 +55,13 @@ function displayBooks(bookList) {
   });
 }
 
-searchInput.addEventListener("input", () => {
-  const searchTerm = searchInput.value.toLowerCase();
+searchInput1.addEventListener("input", () => {
+  const searchTerm = searchInput1.value.toLowerCase();
   const filtered = allBooks.filter((book) =>
     book.title.toLowerCase().includes(searchTerm)
   );
   displayBooks(filtered);
 });
+  
 
-function addToWishlist(book) {
-  const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-  if (!currentUser) {
-    alert('Please login first');
-    return;
-  }
-
-  const wishlistKey = `user_${currentUser.id}_wishlist`;
-  const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
-
-  // Check if book already exists
-  const exists = wishlist.some(b => b.id === book.id);
-  if (exists) {
-    alert("This book is already in your wishlist!");
-    return;
-  }
-
-  wishlist.push(book);
-  localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-  alert(`${book.title} added to your wishlist!`);
-}
-
-// Initial data load
 fetchData();
