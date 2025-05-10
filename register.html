@@ -105,83 +105,74 @@
 
     <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const url = "http://localhost:8080/api/users"; 
-        let allUsers =[];
-        const form = document.getElementById("registerForm");
-        const userName = document.getElementById("name");
-        const mail = document.getElementById("email");
-        const password = document.getElementById("password");
-        const mob = document.getElementById("phone");
-        const type = document.getElementById("type");
+   <script>
+    const url = "http://localhost:8080/auth/register";
+    const form = document.getElementById("registerForm");
+    const userName = document.getElementById("name");
+    const mail = document.getElementById("email");
+    const password = document.getElementById("password");
+    const mob = document.getElementById("phone");
+    const type = document.getElementById("type");
 
-        
-        function validatePassword() {
-            const passVal = password.value;
-            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-            if (passRegex.test(passVal)) {
-              password.classList.add("is-valid");
-              password.classList.remove("is-invalid");
-              return true;
+    function validatePassword() {
+      const passVal = password.value;
+      const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+      if (passRegex.test(passVal)) {
+        password.classList.add("is-valid");
+        password.classList.remove("is-invalid");
+        return true;
+      } else {
+        password.classList.add("is-invalid");
+        password.classList.remove("is-valid");
+        return false;
+      }
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (!validatePassword()) {
+        alert("Password does not meet requirements.");
+        return;
+      }
+
+      if (!userName.value.trim() || !mail.value.trim() || !mob.value.trim() || !type.value.trim()) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      const newUser = {
+        name: userName.value.trim(),
+        email: mail.value.trim(),
+        password: password.value.trim(),
+        phone: mob.value.trim(),
+        userType: type.value.trim()
+      };
+
+      fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(newUser),
+      })
+        .then(async (response) => {
+          if (response.ok) {
+            alert("Registration successful!");
+            window.location.href = "login.html";
+          } else {
+            const errorMsg = await response.text();
+            if (errorMsg.includes("Exists")) {
+              alert("Email already exists. Try again with a new email.");
+              mail.classList.add("is-invalid");
             } else {
-              password.classList.add("is-invalid");
-              password.classList.remove("is-valid");
-              return false;
+              alert("Registration failed: " + errorMsg);
             }
           }
-          password.addEventListener("blur", validatePassword);
-
-          function validateMail(){
-            fetch(url)
-              .then((res) =>res.json())
-              .then((users) => {
-                const existingUser = users.find(
-                  (u) => u.email === mail.value
-                );
-                if(existingUser){
-                  mail.classList.add("is-invalid");
-                  mail.classList.remove("is-valid");
-                  return false;
-                }else{
-                  mail.classList.add("is-valid");
-                  mail.classList.remove("is-invalid");
-                  return true;
-                }
-               })
-          }
-          mail.addEventListener("blur", validateMail);
-  
-
-        form.addEventListener("submit", function (e){
-            e.preventDefault();
-            const valid = validatePassword() && validateMail();//validateUsername() & validatePassword() & validateEmail() & validateMobile() & validateUserType();
-
-           if(userName && mail && password && mob && type && valid){ 
-            const newUser ={
-                name: userName.value.trim(),
-                email: mail.value.trim(),
-                password :password.value.trim(),
-                phone: mob.value.trim(),
-                userType: type.value.trim()
-            };
-
-            fetch(url ,{
-                method :"POST",
-                headers :{"content-type":"application/json"},
-                body :JSON.stringify(newUser),
-            }).then(()=>{
-              window.location.href = "login.html";
-                alert("Registration successful!"); 
-                form.reset();
-                
-            })
-          }
-          else{
-            alert("fill all fields")
-          }
         })
+        .catch(() => {
+          alert("Network or server error. Please try again later.");
+        });
+    });
+    </script>
 
-
-      </script>
   </body>
 </html>
