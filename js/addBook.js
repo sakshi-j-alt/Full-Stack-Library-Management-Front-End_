@@ -11,10 +11,14 @@ const availableCopies=document.getElementById("availableCopies");
 
 // Load authors
 function fetchAuthors() {
-  fetch(`${url}/authors`)
-    .then((res) => res.json())
+ fetch(`${url}/authors`, {
+  headers: {
+    "Authorization": `Bearer ${token}`
+  }
+}) .then((res) => res.json())
     .then((authors) => {
       allListedAuthors = authors;
+     
       displayAuthors();
     });
 }
@@ -57,7 +61,9 @@ form.addEventListener("submit", function (e){
 
 fetch(`${url}/books` ,{
   method :"POST",
-  headers :{"content-type":"application/json"},
+  headers :{"content-type":"application/json",
+    "Authorization": `Bearer ${token}` 
+  },
   body :JSON.stringify(newBook),
 }).then(()=>{
 

@@ -1,6 +1,7 @@
 
 function fetchData() {
-fetch(`${url}/query/status/Resolved`)
+fetch(`${url}/query/status/Resolved`,{
+        headers: { "Authorization": `Bearer ${token}`}})
       .then(response => response.json())
       .then(data => {
         const tableBody = document.getElementById('queryTableBody');

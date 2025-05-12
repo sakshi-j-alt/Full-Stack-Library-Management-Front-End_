@@ -1,8 +1,6 @@
 const searchInput = document.getElementById("searchInput");
 let borrowedBooks = [];
 let AllLibaryBooks = [];
-// const urlAllBooks = "http://localhost:3001/Books";
-// const urlBooks = "http://localhost:3001/BorrowRecords";
 const tableBody = document.getElementById("tableBody");
 let editId = null;
 const userId = document.getElementById("userId");
@@ -23,8 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchBooks() {
     try {
       const [bookRes, borrowedres] = await Promise.all([
-        fetch(`${url}/books`),
-        fetch(`${url}/borrowrecords`),
+        fetch(`${url}/books`, { headers: {
+    "Authorization": `Bearer ${token}`
+  }}),
+        fetch(`${url}/borrowrecords` ,  { headers: {
+    "Authorization": `Bearer ${token}`
+  }}),
       ]);
   
       AllLibaryBooks = await bookRes.json();
@@ -102,9 +104,10 @@ function FindOverDue() {
     displayBooks(filtered);
 }
 
+
 function handleFormSubmit(e) {
     e.preventDefault();
-  
+
     const borrowed = {
       userID: userId.value.trim(),
       bookID: parseInt(bookId.value),
@@ -112,52 +115,53 @@ function handleFormSubmit(e) {
       returnDate: inputReturnDate.value.trim(),
       status: inputStatus.value.trim()
     };
-    
+
     const book = AllLibaryBooks.find(b => b.id === borrowed.bookID);
-    const id = book.id;
-   if(
-    !book
-   ){
-    alert("Book not found in the library records.");
-   }
-    
+    if (!book) {
+      alert("Book not found in the library records.");
+      return;
+    }
+
     if (editId) {
+      // Only send the updated borrow record; backend will handle availableCopies
       fetch(`${url}/borrowrecords/${editId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(borrowed)
       })
-      .then(() => {
-        return fetch(`${url}/books/availableCount/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ availableCopies: book.availableCopies + 1 })
-        });
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to update record");
+        return res.json();
       })
       .then(() => {
         fetchBooks();
         resetForm();
-      });
+      })
+      .catch(err => alert(err.message));
     } else {
       fetch(`${url}/borrowrecords`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(borrowed)
       })
-      .then(() => {
-        return fetch(`${url}/books/availableCount/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ availableCopies: book.availableCopies - 1 })
-        });
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to create record");
+        return res.json();
       })
       .then(() => {
         fetchBooks();
         resetForm();
-      });
+      })
+      .catch(err => alert(err.message));
     }
-  }
-  
+}
+
 
 function resetForm() {
     form.reset();

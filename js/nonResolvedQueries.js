@@ -1,6 +1,7 @@
 const notResolved= "Not Resolved";
 function fetchData() {
-fetch(`${url}/query/status/${notResolved}`)
+fetch(`${url}/query/status/${notResolved}` ,{
+        headers: { "Authorization": `Bearer ${token}`}})
       .then(response => response.json())
       .then(data => {
         const tableBody = document.getElementById('queryTableBody');
@@ -29,7 +30,8 @@ fetch(`${url}/query/status/${notResolved}`)
         fetch(`${url}/query/${id}`, {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+             "Authorization": `Bearer ${token}`
           },
         }).then(() => 
             fetchData());;

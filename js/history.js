@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function fetchBooks() {
-    fetch(`${url}/borrowrecords`)
+    fetch(`${url}/borrowrecords`,{
+        headers: { "Authorization": `Bearer ${token}`}})
         .then(response => response.json())
         .then((data) => {
             bBooks = data;
@@ -23,7 +24,7 @@ function displayBooks(bBooks) {
     tableBody.innerHTML = "";
 
     bBooks.forEach((book) => {
-        if (book.status === "Returned" || book.Status === "Returned") {
+        if (book.status === "Returned" ) {
             const row = document.createElement("tr");
             
 
@@ -44,13 +45,17 @@ function displayBooks(bBooks) {
 }
 
 function handleSearch() {
-    const searchTerm = searchInput.value.toLowerCase();
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    if (!searchTerm) {
+        displayBooks(bBooks); 
+    }
     const filtered = bBooks.filter((book) =>
-        book.id.toLowerCase().includes(searchTerm) ||
-        book.userid.toLowerCase().includes(searchTerm)
+        book.id.toString().toLowerCase().includes(searchTerm) ||
+        (book.userID && book.userID.toString().toLowerCase().includes(searchTerm))
     );
     displayBooks(filtered);
 }
+
 
 searchInput.addEventListener("input", handleSearch);
 

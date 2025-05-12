@@ -264,32 +264,34 @@
   <script src="js/script.js"></script>
   <script>
     
-    const url = "http://localhost:8080/api";
-    function bookCount(){ fetch(`${url}/books`) 
-      .then(response => response.json())
-      .then(data => {
-        const count = data.length;
-        document.getElementById("totalBooks").innerText =count ;
-      })}
-   bookCount();
+    const url = "http://localhost:8080/api";  const token = localStorage.getItem('token');
+if (!token) {
+  window.location.href = "index.html";
+}
 
-   function memberCount(){ fetch(`${url}/users`) 
-      .then(response => response.json())
-      .then(data => {
-        const count = data.length;
-        document.getElementById("member").innerText =count-1 ;
-      })}
-      memberCount();
+    fetch(`${url}/books/count`, {
+  headers: { "Authorization": `Bearer ${token}` }
+})
+  .then(response => response.json())
+  .then(count => {
+    document.getElementById("totalBooks").innerText = count;
+  });
 
-   function bookCount(){ fetch(`${url}/books`) 
-      .then(response => response.json())
-      .then(data => {
-        const count = data.length;
-        document.getElementById("totalBooks").innerText =count ;
-      })}
-   bookCount();
 
-   function borrowedCount(){ fetch(`${url}/borrowrecords`) 
+  fetch(`${url}/users/count`, {
+  headers: { "Authorization": `Bearer ${token}` }
+})
+  .then(response => response.json())
+  .then(count => {
+    document.getElementById("member").innerText = count;
+  });
+
+
+   
+
+   function borrowedCount(){ fetch(`${url}/borrowrecords`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      }) 
       .then(response => response.json())
       .then(data => {
         let count =0;
@@ -302,20 +304,14 @@
       })}
       borrowedCount();
   
-    function logout() {
-      sessionStorage.clear();
-      sessionStorage.setItem("loggedOut", "true");
-      window.location.href = "index.html";
-    }
+    
 
-    // const urlsBook = "http://localhost:3001/Books";
-    // const urlsBorrow = "http://localhost:3001/BorrowRecords";
-
-    // PIE CHART: Genre Distribution
     const genreChart = document.getElementById("genreChart");
     
     function fetchAndRenderGenreChart() {
-  fetch(`${url}/charts/genre-distribution`)
+  fetch(`${url}/charts/genre-distribution`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
     .then(res => res.json())
     .then(data => {
       const genres = data.map(item => item.genre);
@@ -381,7 +377,9 @@
     const monthlyUsersChart = document.getElementById("monthlyUsersChart");
 
 function fetchAndRenderMonthlyUsers() {
-  fetch(`${url}/charts/monthly-active-users`)
+  fetch(`${url}/charts/monthly-active-users`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
     .then(res => res.json())
     .then(data => {
       const labels = data.map(item => item.month);

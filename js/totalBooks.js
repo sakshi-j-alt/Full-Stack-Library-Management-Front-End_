@@ -10,8 +10,12 @@ const edittotalCopies = document.getElementById("edittotalCopies");
 async function fetchData() {
   try {
     const [bookRes, authorRes] = await Promise.all([
-      fetch(`${url}/books`),
-      fetch(`${url}/authors`),
+      fetch(`${url}/books` ,  {
+  headers: { "Authorization": `Bearer ${token}` }
+}),
+      fetch(`${url}/authors`,  {
+  headers: { "Authorization": `Bearer ${token}` }
+}),
     ]);
 
     allBooks = await bookRes.json();
@@ -91,7 +95,9 @@ editButton.addEventListener("click", async (e) => {
   try {
     const response = await fetch(`${url}/books/edit/${editId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" ,
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(updatedBook)
     });
 
@@ -119,7 +125,11 @@ searchInput.addEventListener("input", () => {
 function deleteBook(id) {
   if (confirm("Are you sure you want to delete this book?")) {
       fetch(`${url}/books/${id}`, {
-          method: "DELETE"
+          method: "DELETE",
+           headers: {
+        "Authorization": `Bearer ${token}`
+      }
+
       }).then(() => 
         fetchData());
   }
